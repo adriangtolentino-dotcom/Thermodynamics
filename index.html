@@ -213,8 +213,8 @@ $("bSpin").onclick=e=>{spin=!spin;e.target.classList.toggle("on",spin)};
 $("bPause").onclick=e=>{paused=!paused;e.target.classList.toggle("on",paused);e.target.textContent=paused?"Resume":"Pause"};
 $("bReset").onclick=reset;$("bIR").onclick=e=>{ir=!ir;e.target.classList.toggle("on",ir)};
 /* ---- credits dashboard ---- */
-const ROLES=["Group Member","Group Member"];
-$("crm").innerHTML=ROLES.map((r,i)=>`<div class="mem"><span class="av" id="av${i}">${r?"M"+(i+1):"+"}</span><div><div class="nm ed" contenteditable="true" data-k="m${i}" data-ph="Adrian Glenn D. Tolentino">${r?"Placeholder "+(i+1):""}</div><div class="rl ed" contenteditable="true" data-k="r${i}" data-ph="Role">${r}</div></div></div>`).join("");
+const ROLES=["Group Member"];
+$("crm").innerHTML=ROLES.map((r,i)=>`<div class="mem"><span class="av" id="av${i}">${r?"M"+(i+1):"+"}</span><div><div class="nm ed" contenteditable="true" data-k="m${i}" data-ph="Adrian Glenn D. Tolentino">${r?"Adrian Glenn D. Tolentino"+(i+1):""}</div><div class="rl ed" contenteditable="true" data-k="r${i}" data-ph="Role">${r}</div></div></div>`).join("");
 const ini=t=>t.trim().split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()||"+";
 document.querySelectorAll(".ed").forEach(el=>{const k=el.dataset.k;
  try{const v=localStorage.getItem("cr_"+k);if(v)el.textContent=v}catch(e){}
