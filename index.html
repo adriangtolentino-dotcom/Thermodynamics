@@ -1,263 +1,187 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Heat Transfer Interactive Model</title>
+<title>Thermo Lab 3D: Heat Transfer</title>
 <style>
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
---bg:#f6f4ef;--card:#fff;--ink:#1d2329;--mut:#5d6872;--line:#d9d5cb;--acc:#c2410c;--blue:#2563a8;--grn:#2f855a;--red:#b83232}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181c;--card:#1d2328;--ink:#e8ebed;--mut:#9aa6af;--line:#333c43;--acc:#f08a4b;--blue:#6aa5e6;--grn:#5cc08a;--red:#ef7b7b}}
+--paper:#f1ece3;--card:#faf7f1;--track:#ddd3c2;--ink:#15110e;--ink2:#5d544a;--line:#d4c9b8;--ember:#f2542d;--amber:#e8920c;--ice:#1f8fa6;--scr:#0a0e13;--st1:#efe3cf;--st2:#e4d8c4;
+--ramp:linear-gradient(90deg,#2b2f8f,#7a3cc0 22%,#d1306f 45%,#ff6a3d 68%,#ffb23e 86%,#fff1c2);
+--mono:ui-monospace,"SF Mono",Consolas,monospace;--disp:"Bahnschrift","DIN Alternate","Roboto Condensed","Arial Narrow",system-ui,sans-serif}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#0d1117;--card:#121821;--track:#1f2833;--ink:#eef2f6;--ink2:#8b98a8;--line:#232d3a;--ember:#ff6b3d;--amber:#ffb23e;--ice:#5ad1e6;--st1:#16202d;--st2:#0a0e13}}
+:root[data-theme="dark"]{--paper:#0d1117;--card:#121821;--track:#1f2833;--ink:#eef2f6;--ink2:#8b98a8;--line:#232d3a;--ember:#ff6b3d;--amber:#ffb23e;--ice:#5ad1e6;--st1:#16202d;--st2:#0a0e13}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-main{max-width:920px;margin:0 auto;padding:16px}
-h1{font:700 22px/1.2 Georgia,serif;margin:4px 0}
-.sub{color:var(--mut);margin:0 0 12px}
-nav{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
-nav button{flex:1;min-width:140px;padding:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;font:inherit;cursor:pointer}
-nav button.on{background:var(--acc);color:#fff;border-color:var(--acc)}
-.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:640px){.grid{grid-template-columns:1fr}}
-label{display:block;margin:8px 0 2px;font-weight:600}
-label span{float:right;color:var(--acc);font-variant-numeric:tabular-nums}
-input[type=range]{width:100%;accent-color:var(--acc)}
-select{width:100%;padding:8px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
-canvas{width:100%;display:block;background:var(--bg);border:1px solid var(--line);border-radius:8px}
-.eq{font-family:Georgia,serif;background:var(--bg);border-left:3px solid var(--acc);padding:8px 10px;margin:8px 0;border-radius:4px}
-.kv{display:grid;grid-template-columns:1fr auto;gap:2px 10px;font-variant-numeric:tabular-nums}
-.kv b{text-align:right}
-.note{color:var(--mut);font-size:13px}
-.bar{display:flex;align-items:center;margin:6px 0;gap:8px}
-.bar i{width:34px;font-style:normal;font-weight:700}
-.bar .t{flex:1;height:22px;position:relative;background:var(--bg);border-radius:4px}
-.bar .f{position:absolute;top:0;height:100%;border-radius:3px}
-.bar .t:after{content:"";position:absolute;left:50%;top:-2px;bottom:-2px;border-left:1px solid var(--mut)}
-.bar em{width:90px;text-align:right;font-style:normal;font-variant-numeric:tabular-nums}
-.tab{display:none}.tab.on{display:block}
-.hero{background:linear-gradient(135deg,#c2410c,#7c2d12 55%,#1e3a5f);color:#fff;border-radius:14px;padding:18px 20px;margin-bottom:14px}
-.hero h1{color:#fff;font-size:26px}.hero .sub{color:#ffe9d6;margin:0}
-.card{box-shadow:0 2px 10px rgba(0,0,0,.07)}
-nav button.on{background:linear-gradient(135deg,var(--acc),#9a3412);box-shadow:0 2px 8px rgba(194,65,12,.35)}
-.viewbar{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
-.viewbar button{padding:7px 16px;border-radius:20px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;cursor:pointer}
-.viewbar button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
-.viewbar .chk{display:inline-flex;gap:6px;margin:0 0 0 auto;font-weight:400;align-items:center}
-#c4{touch-action:none;cursor:grab;background:radial-gradient(circle at 50% 30%,var(--card),var(--bg))}
-.fgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
-.fc{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--acc);border-radius:10px;padding:12px 14px}
-.fc:nth-child(3n+2){border-top-color:var(--blue)}.fc:nth-child(3n){border-top-color:var(--grn)}
-.fc h3{margin:0 0 4px;font:700 16px Georgia,serif}.fc p{margin:4px 0 0;font-size:14px;color:var(--mut)}
-.fc .eq{font-size:16px;margin:6px 0}
-h2.sec{font:700 18px Georgia,serif;margin:18px 0 8px}
-</style></head><body><main>
-<div class="hero"><h1>🔥 Heat Transfer: Interactive Thermodynamics Lab</h1>
-<p class="sub">Sensible and latent heat · kinetic theory · gas laws · the First Law, with a rotatable 3D and a 2D system model and a full formula guide.</p></div>
-<nav>
-<button class="on" data-t="t1">1 · Sensible &amp; Latent Heat</button>
-<button data-t="t2">2 · Gas Particles &amp; Gas Laws</button>
-<button data-t="t3">3 · First Law Processes</button>
-<button data-t="t4">4 · System Model 2D / 3D</button>
-<button data-t="t5">5 · Formulas &amp; Explanations</button>
-</nav>
-
-<section id="t1" class="tab on">
-<div class="card"><div class="grid"><div>
-<label>Mass of water substance <span id="m_v"></span></label><input id="m" type="range" min="50" max="500" value="100" step="10">
-<label>Heat added <span id="q_v"></span></label><input id="q" type="range" min="0" max="1000" value="0">
-<div class="eq">Sensible: Q = m·c·ΔT<br>Latent: Q = m·L (T stays constant)</div>
-<p class="note">Starts as ice at −20 °C. c(ice)=2.09, c(water)=4.186, c(steam)=2.01 J/g·K; L<sub>f</sub>=334, L<sub>v</sub>=2260 J/g.</p>
-</div><div class="kv" id="r1"></div></div></div>
-<div class="card"><canvas id="c1" width="860" height="320"></canvas>
-<p class="note">Sloped segments = sensible heat (temperature changes). Flat segments = latent heat (phase change). Notice how much energy boiling needs.</p></div>
-</section>
-
-<section id="t2" class="tab">
-<div class="card"><canvas id="c2" width="860" height="300"></canvas>
-<div class="grid"><div>
-<label>Temperature T <span id="T_v"></span></label><input id="T" type="range" min="100" max="1000" value="300">
-<label>Volume V (piston) <span id="V_v"></span></label><input id="V" type="range" min="5" max="40" value="20">
-<label>Amount of gas n <span id="n_v"></span></label><input id="n" type="range" min="0.5" max="3" step="0.5" value="1.5">
-<div class="eq">PV = nRT &nbsp;·&nbsp; v<sub>rms</sub> = √(3RT/M) &nbsp;·&nbsp; KE<sub>avg</sub> = (3/2)k<sub>B</sub>T</div>
-</div><div class="kv" id="r2"></div></div>
-<p class="note">Helium gas (M = 4 g/mol). Try: halve V at constant T (Boyle), raise T at constant V (Gay-Lussac), add more gas (Avogadro). Particle speed is visually scaled.</p></div>
-</section>
-
-<section id="t3" class="tab">
-<div class="card"><div class="grid"><div>
-<label>Process (monatomic ideal gas)</label>
-<select id="proc"><option value="iv">Isochoric (V constant)</option><option value="ib">Isobaric (P constant)</option><option value="it">Isothermal (T constant)</option><option value="ad">Adiabatic (Q = 0)</option></select>
-<label>Moles n <span id="n3_v"></span></label><input id="n3" type="range" min="1" max="5" step="0.5" value="2">
-<label>Initial temperature T₁ <span id="T3_v"></span></label><input id="T3" type="range" min="200" max="600" step="10" value="300">
-<label id="xl">Change <span id="x_v"></span></label><input id="x" type="range">
-<div class="eq">ΔU = Q − W<br>(Q in = +, W done by gas = +)</div>
-</div><div><div class="kv" id="r3"></div><div id="bars" style="margin-top:10px"></div></div></div></div>
-<p class="note">C<sub>v</sub> = 3R/2, C<sub>p</sub> = 5R/2, γ = 5/3. Adiabatic: T₂ = T₁(V₁/V₂)<sup>γ−1</sup>.</p>
-</section>
-<section id="t4" class="tab">
-<div class="card"><div class="viewbar"><button id="v3" class="on">3D view</button><button id="v2">2D cross-section</button><label class="chk"><input type="checkbox" id="auto" checked> auto-rotate</label></div>
-<canvas id="c4" width="860" height="400"></canvas>
-<p class="note">A burner heats gas in a cylinder under a free piston at constant pressure (100 kPa). Drag the 3D view to rotate it. Particle colour shows temperature: blue is cold, red is hot.</p>
-<div class="grid"><div>
-<label>Heat supplied by burner Q <span id="q4_v"></span></label><input id="q4" type="range" min="0" max="10" step="0.25" value="3">
-<label>Amount of gas n (monatomic) <span id="n4_v"></span></label><input id="n4" type="range" min="0.5" max="2" step="0.5" value="1">
-<div class="eq">Q = n·Cp·ΔT &nbsp;·&nbsp; W = P·ΔV &nbsp;·&nbsp; ΔU = n·Cv·ΔT<br>First Law: Q = ΔU + W</div>
-<p class="note">For a monatomic gas, 60 % of the heat raises internal energy and 40 % leaves as expansion work, because Cv/Cp = 3/5.</p>
-</div><div class="kv" id="r4"></div></div></div>
-</section>
-
-<section id="t5" class="tab">
-<h2 class="sec" style="margin-top:4px">Energy and heat</h2>
-<div class="fgrid">
-<div class="fc"><h3>First Law of Thermodynamics</h3><div class="eq">ΔU = Q − W</div><p>Energy is conserved. Heat Q added to a system either raises its internal energy U or leaves as work W done by the gas. Sign convention here: Q in is +, W done by the gas is +.</p></div>
-<div class="fc"><h3>Sensible heat</h3><div class="eq">Q = m · c · ΔT</div><p>Heat that changes temperature without changing phase. c is specific heat (J/g·K): ice 2.09, water 4.186, steam 2.01.</p></div>
-<div class="fc"><h3>Latent heat</h3><div class="eq">Q = m · L</div><p>Heat absorbed or released during a phase change at constant temperature. L<sub>f</sub> = 334 J/g (melting), L<sub>v</sub> = 2260 J/g (boiling). The energy breaks molecular bonds instead of speeding molecules up.</p></div>
-<div class="fc"><h3>Conduction</h3><div class="eq">Q/t = k·A·ΔT / L</div><p>Heat flow through a solid. k is thermal conductivity, A area, L thickness. Metals have large k.</p></div>
-<div class="fc"><h3>Convection</h3><div class="eq">Q/t = h·A·ΔT</div><p>Heat carried by a moving fluid. h is the convection coefficient. Hot fluid rises, cool fluid sinks, forming currents.</p></div>
-<div class="fc"><h3>Radiation</h3><div class="eq">Q/t = ε·σ·A·T⁴</div><p>Electromagnetic emission, needing no medium. σ = 5.67×10⁻⁸ W/m²K⁴, ε is emissivity, T in kelvin.</p></div>
-</div>
-<h2 class="sec">Gas laws and kinetic theory</h2>
-<div class="fgrid">
-<div class="fc"><h3>Ideal gas law</h3><div class="eq">PV = nRT</div><p>R = 8.314 J/mol·K. With P in kPa and V in litres, PV comes out in joules. T must be in kelvin: K = °C + 273.15.</p></div>
-<div class="fc"><h3>Boyle’s law</h3><div class="eq">P₁V₁ = P₂V₂</div><p>At constant T and n, squeezing a gas into half the volume doubles the pressure.</p></div>
-<div class="fc"><h3>Charles’s law</h3><div class="eq">V₁/T₁ = V₂/T₂</div><p>At constant P and n, volume is proportional to absolute temperature. This is what the piston in module 4 does.</p></div>
-<div class="fc"><h3>Gay-Lussac’s law</h3><div class="eq">P₁/T₁ = P₂/T₂</div><p>At constant V and n, pressure rises in proportion to absolute temperature.</p></div>
-<div class="fc"><h3>Kinetic energy of a molecule</h3><div class="eq">KE<sub>avg</sub> = (3/2)·k<sub>B</sub>·T</div><p>Temperature is a measure of the average translational kinetic energy. k<sub>B</sub> = 1.38×10⁻²³ J/K.</p></div>
-<div class="fc"><h3>Root-mean-square speed</h3><div class="eq">v<sub>rms</sub> = √(3RT / M)</div><p>M is molar mass in kg/mol. Lighter gases such as helium move faster than heavier ones at the same temperature.</p></div>
-<div class="fc"><h3>Pressure from collisions</h3><div class="eq">P = (1/3)(N/V)·m·v²<sub>rms</sub></div><p>Pressure is the average force of countless molecular impacts on the walls. It links the microscopic motion to PV = nRT.</p></div>
-<div class="fc"><h3>Internal energy</h3><div class="eq">U = (3/2)·n·R·T</div><p>For a monatomic ideal gas, U depends only on temperature. Hence ΔU = 0 in any isothermal process.</p></div>
-<div class="fc"><h3>Molar heat capacities</h3><div class="eq">C<sub>v</sub> = 3R/2 · C<sub>p</sub> = 5R/2 · C<sub>p</sub> − C<sub>v</sub> = R</div><p>C<sub>p</sub> is larger because heat at constant pressure must also pay for expansion work. γ = C<sub>p</sub>/C<sub>v</sub> = 5/3.</p></div>
-</div>
-<h2 class="sec">Thermodynamic processes</h2>
-<div class="fgrid">
-<div class="fc"><h3>Isochoric (V constant)</h3><div class="eq">W = 0, Q = ΔU = nC<sub>v</sub>ΔT</div><p>No volume change means no work, so all heat raises internal energy.</p></div>
-<div class="fc"><h3>Isobaric (P constant)</h3><div class="eq">W = PΔV = nRΔT, Q = nC<sub>p</sub>ΔT</div><p>Heat splits into ΔU (60 %) and W (40 %) for a monatomic gas.</p></div>
-<div class="fc"><h3>Isothermal (T constant)</h3><div class="eq">ΔU = 0, Q = W = nRT·ln(V₂/V₁)</div><p>The gas stays at one temperature, so all absorbed heat becomes work.</p></div>
-<div class="fc"><h3>Adiabatic (Q = 0)</h3><div class="eq">T₂ = T₁(V₁/V₂)<sup>γ−1</sup>, W = −ΔU</div><p>With no heat exchange, expansion work comes from internal energy, so the gas cools. Compression heats it.</p></div>
-</div>
-<h2 class="sec">Worked example</h2>
-<div class="card"><p style="margin-top:0"><b>Problem:</b> How much heat turns 100 g of ice at −20 °C into steam at 100 °C?</p>
-<div class="eq">Q₁ = 100 × 2.09 × 20 = 4,180 J (warm ice)<br>Q₂ = 100 × 334 = 33,400 J (melt)<br>Q₃ = 100 × 4.186 × 100 = 41,860 J (warm water)<br>Q₄ = 100 × 2260 = 226,000 J (boil)<br>Q<sub>total</sub> ≈ 305.4 kJ</div>
-<p class="note">Latent heat (Q₂ + Q₄) is about 85 % of the total. Check this in module 1 by setting the mass to 100 g.</p></div>
-</section>
-</main>
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.5 "Inter","Segoe UI",system-ui,sans-serif}
+body::before{content:"";position:fixed;left:0;right:0;top:0;height:3px;z-index:99;background:var(--ramp)}
+#app{display:grid;grid-template-columns:352px minmax(0,1fr);height:100%}
+aside{overflow:auto;padding:22px 22px 30px 44px;border-right:1px solid var(--line);
+background:repeating-linear-gradient(180deg,color-mix(in srgb,var(--ink) 38%,transparent) 0 1px,transparent 1px 8px) 12px 0/7px 80px repeat-y local,repeating-linear-gradient(180deg,var(--ink2) 0 1px,transparent 1px 40px) 12px 0/14px 80px repeat-y local,var(--card);counter-reset:ch}
+.brand{display:flex;gap:12px;align-items:center}
+.logo{width:44px;height:44px;display:grid;place-items:center;border-radius:8px;font-size:23px;background:color-mix(in srgb,var(--ember) 14%,var(--card));border:1px solid color-mix(in srgb,var(--ember) 60%,transparent);box-shadow:0 0 22px -4px var(--ember)}
+h1{font:700 1.5rem var(--disp);text-transform:uppercase;margin:0;line-height:1}
+.tag{margin:9px 0 0;font-size:.88rem;color:var(--ink2)}
+.sec{display:flex;justify-content:space-between;margin:24px 0 12px;padding-bottom:7px;border-bottom:1px solid var(--line);font:700 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2)}
+.sec::before{counter-increment:ch;content:counter(ch,decimal-leading-zero);margin-right:10px;color:var(--ember)}
+.sec span:first-child{flex:1}.sec span:last-child{color:var(--ember)}
+.exp{position:relative;display:flex;gap:12px;align-items:center;width:100%;margin-bottom:8px;padding:10px 12px 10px 14px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer;text-align:left;font:inherit;transition:.15s}
+.exp::before{content:"";position:absolute;left:-1px;top:8px;bottom:8px;width:3px;border-radius:2px;background:var(--line)}
+.exp:hover{border-color:var(--ember);transform:translateX(2px)}
+.exp .i{width:38px;height:38px;display:grid;place-items:center;border-radius:6px;background:var(--paper);font-size:20px}
+.exp small{display:block;font:.76rem var(--mono);color:var(--ink2)}
+.exp.on{border-color:var(--ember);background:color-mix(in srgb,var(--ember) 9%,transparent)}.exp.on::before{background:var(--ember);box-shadow:0 0 10px var(--ember)}
+select{width:100%;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--paper);color:var(--ink);font:inherit}
+.sl{margin-top:14px}.sl label{display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
+.sl b{font:600 12.5px var(--mono);padding:3px 9px;border-radius:5px;background:var(--scr);color:#ffcf7a;min-width:62px;text-align:right}
+input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:30px;background:transparent;cursor:pointer;outline:none}
+input[type=range]::-webkit-slider-runnable-track{height:8px;border-radius:2px;background:linear-gradient(90deg,transparent var(--p,50%),var(--track) var(--p,50%)),var(--ramp)}
+input[type=range]::-moz-range-track{height:8px;border-radius:2px;background:linear-gradient(90deg,transparent var(--p,50%),var(--track) var(--p,50%)),var(--ramp)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:26px;margin-top:-9px;border-radius:4px;background:linear-gradient(var(--ember),var(--ember)) center/2px 56% no-repeat,linear-gradient(180deg,#fdfbf7,#cfc6b8);border:1px solid #4a4036;box-shadow:0 3px 8px rgba(0,0,0,.4)}
+input[type=range]::-moz-range-thumb{width:12px;height:24px;border-radius:4px;background:#efe8dc;border:1px solid #4a4036}
+.tog{display:flex;flex-wrap:wrap;gap:7px;margin-top:9px}
+.tog button{flex:1 1 0;min-width:0;padding:10px 6px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--ink);font:700 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;cursor:pointer}
+.tog button.on{background:var(--ember);border-color:var(--ember);color:#fff}
+#explain{margin-top:18px;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--ember);border-radius:8px;font-size:.88rem}
+#explain h3{margin:0 0 6px;font:700 1rem var(--disp);text-transform:uppercase}
+#explain code{display:block;font:600 12.5px var(--mono);background:var(--paper);padding:5px 8px;border-radius:5px;margin:5px 0}
+.hint{font-size:.8rem;color:var(--ink2);margin:8px 0 0}
+#stage{position:relative;overflow:hidden;background:radial-gradient(circle at 50% 35%,var(--st1),var(--st2));touch-action:none}
+#stage canvas.v{position:absolute;inset:0;width:100%;height:100%}
+#hud{position:absolute;right:16px;top:16px;min-width:230px;padding:10px 14px;border-radius:10px;background:rgba(10,14,19,.88);color:#e7eef6;font:12.5px/1.65 var(--mono);border:1px solid rgba(255,255,255,.08)}
+#hud h4{margin:0 0 4px;font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:#7d8b9b}
+#hud div{display:flex;justify-content:space-between;gap:16px}#hud b{color:#ffcf7a}
+#gauge{position:absolute;left:18px;top:18px;bottom:160px;width:50px;display:flex;flex-direction:column;align-items:center;gap:4px;font:600 11px var(--mono);color:var(--ink2)}
+.gt{flex:1;width:16px;border-radius:8px;background:var(--track);position:relative;overflow:hidden;border:1px solid var(--line)}
+#mer{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(0deg,#2b2f8f,#d1306f,#ff6a3d)}
+#tl{position:absolute;left:84px;right:16px;bottom:14px;height:128px;border-radius:10px;background:rgba(10,14,19,.88);padding:6px 10px;border:1px solid rgba(255,255,255,.08)}
+#tl b{font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#7d8b9b}
+#tlc{width:100%;height:96px;display:block}
+@media(max-width:860px){html,body{height:auto}#app{grid-template-columns:1fr;height:auto}#stage{height:78vh;order:-1}aside{padding-left:40px}#hud{min-width:0;font-size:11px;padding:6px 9px}}
+</style></head><body>
+<div id="app">
+<aside>
+<div class="brand"><span class="logo">🔥</span><h1>Thermo Lab 3D</h1></div>
+<p class="tag">Heat, gas and energy in a little lab. Pick an experiment, slide something, and watch the bench respond.</p>
+<div class="sec">Pick an experiment</div><div id="cards"></div>
+<div class="sec"><span>Set it up</span><span id="eq"></span></div>
+<div id="optrow" style="display:none"><select id="opt"><option value="0">Free piston (isobaric)</option><option value="1">Locked piston (isochoric)</option></select></div>
+<div id="sl"></div>
+<div class="sec"><span>Time</span><span id="clock">0.0 s</span></div>
+<div class="tog" id="chips"><button data-s="1">×1</button><button data-s="2">×2</button><button data-s="5">×5</button><button data-s="10">×10</button></div>
+<div id="explain"></div>
+<div class="sec">Look around</div>
+<div class="tog"><button id="b3" class="on">3D view</button><button id="b2">2D view</button></div>
+<div class="tog"><button id="bSpin" class="on">Spin</button><button id="bPause">Pause</button><button id="bReset">Start over</button></div>
+<div class="tog"><button id="bIR">Heat vision</button></div>
+<p class="hint" id="vh">Drag to turn the bench. Scroll or pinch to zoom.</p>
+</aside>
+<div id="stage">
+<canvas class="v" id="cv3d"></canvas><canvas class="v" id="cv2d" style="display:none"></canvas>
+<div id="gauge"><span id="gmax"></span><div class="gt"><div id="mer"></div></div><span id="gmin"></span><span id="gval" style="color:var(--ember)"></span></div>
+<div id="hud"></div>
+<div id="tl"><b id="tll">Your experiment so far</b><canvas id="tlc" width="760" height="96"></canvas></div>
+</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-const $=id=>document.getElementById(id), R=8.314;
-const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
- document.querySelectorAll('nav button,.tab').forEach(e=>e.classList.remove('on'));
- b.classList.add('on');$(b.dataset.t).classList.add('on');});
-const f=(v,d=1)=>v.toLocaleString('en',{maximumFractionDigits:d,minimumFractionDigits:d});
-
-/* ---- Tab 1 ---- */
-function seg(m){const a=m*2.09*20,b=m*334,c=m*4.186*100,d=m*2260,e=m*2.01*20;return [a,b,c,d,e];}
-function draw1(){
- const m=+$('m').value,s=seg(m),tot=s.reduce((x,y)=>x+y,0),Q=+$('q').value/1000*tot;
- $('m_v').textContent=m+' g';$('q_v').textContent=f(Q/1000,1)+' kJ';
- const names=['Ice warming','Melting (latent)','Water warming','Boiling (latent)','Steam warming'];
- const T0=[-20,0,0,100,100],T1=[0,0,100,100,120];
- let rem=Q,i=0,T=-20,sens=0,lat=0;
- for(i=0;i<5;i++){const used=Math.min(rem,s[i]);
-  if(i%2==1)lat+=used;else sens+=used;
-  T=T0[i]+(T1[i]-T0[i])*(s[i]?used/s[i]:0);rem-=used;if(rem<=0.0001&&used<s[i])break;if(rem<=0.0001){if(used==s[i]&&i<4&&Q<tot){}break;}}
- if(i>4)i=4;
- const phase=Q>=tot?'Steam':['Ice','Ice + water','Water','Water + steam','Steam'][i];
- $('r1').innerHTML=`<span>Stage</span><b>${names[i]}</b><span>Phase</span><b>${phase}</b><span>Temperature</span><b>${f(T)} °C</b><span>Sensible heat so far</span><b>${f(sens/1000,2)} kJ</b><span>Latent heat so far</span><b>${f(lat/1000,2)} kJ</b><span>Total heat added</span><b>${f(Q/1000,2)} kJ</b><span>Total needed (−20→120 °C)</span><b>${f(tot/1000,1)} kJ</b><span>Boiling share of total</span><b>${f(s[3]/tot*100,0)} %</b>`;
- const c=$('c1'),g=c.getContext('2d'),W=c.width,H=c.height,pl=50,pb=30,pt=12,pr=14;
- g.clearRect(0,0,W,H);
- const X=q=>pl+q/tot*(W-pl-pr),Y=t=>H-pb-(t+20)/140*(H-pb-pt);
- g.strokeStyle=css('--line');g.fillStyle=css('--mut');g.font='12px system-ui';g.lineWidth=1;
- for(let t=-20;t<=120;t+=20){g.beginPath();g.moveTo(pl,Y(t));g.lineTo(W-pr,Y(t));g.stroke();g.fillText(t,pl-34,Y(t)+4);}
- g.fillText('Temperature (°C)',4,10);g.fillText('Heat added (kJ) →  total '+f(tot/1000,0),W-190,H-8);
- let q0=0;g.lineWidth=3;
- for(let k=0;k<5;k++){g.strokeStyle=k%2?css('--red'):css('--blue');g.beginPath();g.moveTo(X(q0),Y(T0[k]));q0+=s[k];g.lineTo(X(q0),Y(T1[k]));g.stroke();}
- g.fillStyle=css('--acc');g.beginPath();g.arc(X(Q),Y(T),7,0,7);g.fill();
- g.fillStyle=css('--blue');g.fillText('blue = sensible',pl+10,pt+14);g.fillStyle=css('--red');g.fillText('red = latent',pl+110,pt+14);
-}
-['m','q'].forEach(i=>$(i).oninput=draw1);
-
-/* ---- Tab 2 ---- */
-const c2=$('c2'),g2=c2.getContext('2d');let P=[],pistonX=0;
-function setN(){const want=Math.round(+$('n').value*20);
- while(P.length<want)P.push({x:Math.random()*100+10,y:Math.random()*260+20,a:Math.random()*6.28,s:.6+Math.random()*.8});
- P.length=want;}
-function upd2(){const T=+$('T').value,V=+$('V').value,n=+$('n').value;
- $('T_v').textContent=T+' K';$('V_v').textContent=V+' L';$('n_v').textContent=n+' mol';setN();
- const p=n*R*T/V,vr=Math.sqrt(3*R*T/0.004),ke=1.5*1.380649e-23*T;
- $('r2').innerHTML=`<span>Pressure P = nRT/V</span><b>${f(p,0)} kPa</b><span>Pressure (atm)</span><b>${f(p/101.325,2)} atm</b><span>v<sub>rms</sub></span><b>${f(vr,0)} m/s</b><span>Avg KE per atom</span><b>${(ke*1e21).toFixed(2)}×10⁻²¹ J</b><span>Internal energy U=(3/2)nRT</span><b>${f(1.5*n*R*T/1000,2)} kJ</b><span>PV (kPa·L = J)</span><b>${f(p*V,0)} J</b>`;}
-['T','V','n'].forEach(i=>$(i).oninput=upd2);
-function loop(){
- const T=+$('T').value,V=+$('V').value,W=c2.width,H=c2.height;
- const target=60+(V-5)/35*(W-80);pistonX+=(target-pistonX)*.15;
- g2.clearRect(0,0,W,H);g2.fillStyle=css('--card');g2.fillRect(0,0,pistonX,H);
- const sp=Math.sqrt(T/300)*2.2;
- for(const p of P){p.x+=Math.cos(p.a)*sp*p.s;p.y+=Math.sin(p.a)*sp*p.s;
-  if(p.x<6){p.x=6;p.a=Math.PI-p.a}if(p.x>pistonX-6){p.x=pistonX-6;p.a=Math.PI-p.a}
-  if(p.y<6){p.y=6;p.a=-p.a}if(p.y>H-6){p.y=H-6;p.a=-p.a}
-  g2.fillStyle=`hsl(${220-(T-100)/900*220},80%,55%)`;g2.beginPath();g2.arc(p.x,p.y,5,0,7);g2.fill();}
- g2.fillStyle=css('--mut');g2.fillRect(pistonX,0,8,H);g2.fillRect(pistonX+8,H/2-6,W,12);
- requestAnimationFrame(loop);}
-
-/* ---- Tab 3 ---- */
-const cfg={iv:['Temperature change ΔT',-200,400,10,' K'],ib:['Temperature change ΔT',-200,400,10,' K'],it:['Volume ratio V₂/V₁',.3,3,.1,'×'],ad:['Volume ratio V₂/V₁',.3,3,.1,'×']};
-function setProc(){const c=cfg[$('proc').value],x=$('x');x.min=c[1];x.max=c[2];x.step=c[3];x.value=c[0].startsWith('Temp')?100:2;upd3();}
-function upd3(){const k=$('proc').value,c=cfg[k],n=+$('n3').value,T1=+$('T3').value,x=+$('x').value;
- $('xl').firstChild.textContent=c[0]+' ';$('x_v').textContent=x+c[4];$('n3_v').textContent=n+' mol';$('T3_v').textContent=T1+' K';
- const Cv=1.5*R,Cp=2.5*R,gam=5/3;let Q,W,U,T2;
- if(k=='iv'){T2=T1+x;U=n*Cv*x;W=0;Q=U;}
- if(k=='ib'){T2=T1+x;U=n*Cv*x;W=n*R*x;Q=n*Cp*x;}
- if(k=='it'){T2=T1;U=0;W=n*R*T1*Math.log(x);Q=W;}
- if(k=='ad'){T2=T1*Math.pow(x,1-gam);U=n*Cv*(T2-T1);Q=0;W=-U;}
- const fx=v=>f(v/1000,2)+' kJ';
- $('r3').innerHTML=`<span>Final temperature T₂</span><b>${f(T2,0)} K</b><span>Heat Q</span><b>${fx(Q)}</b><span>Work by gas W</span><b>${fx(W)}</b><span>ΔU</span><b>${fx(U)}</b><span>Check: Q − W</span><b>${fx(Q-W)}</b>`;
- const mx=Math.max(Math.abs(Q),Math.abs(W),Math.abs(U),1);
- const bar=(l,v,col)=>{const w=Math.abs(v)/mx*50;return `<div class="bar"><i>${l}</i><div class="t"><div class="f" style="background:${col};width:${w}%;left:${v<0?50-w:50}%"></div></div><em>${fx(v)}</em></div>`};
- $('bars').innerHTML=bar('Q',Q,'var(--red)')+bar('W',W,'var(--blue)')+bar('ΔU',U,'var(--grn)')+
- `<p class="note">${{iv:'No volume change → no work; all heat changes internal energy.',ib:'Heat splits: part raises U, part does expansion work.',it:'T constant → ΔU = 0, so all heat becomes work.',ad:'No heat flow → expansion work is paid from internal energy (gas cools).'}[k]}</p>`;}
-['n3','T3','x'].forEach(i=>$(i).oninput=upd3);$('proc').onchange=setProc;
-/* ---- Tab 4: 2D / 3D system model ---- */
-const c4=$('c4'),g4=c4.getContext('2d'),P4=[];let view='3d',rY=.7,rX=.45,drag=null,S4={};
-function calc4(){const n=+$('n4').value,Q=+$('q4').value*1000,T1=300,Pk=100,Cp=2.5*R,dT=Q/(n*Cp),T2=T1+dT,V1=n*R*T1/Pk,V2=n*R*T2/Pk;
- return S4={n,Q,T1,T2,V1,V2,Pk,W:Pk*(V2-V1),U:n*1.5*R*dT,H:.3+2.2*V2/100};}
-function upd4(){const s=calc4(),w=Math.round(s.n*30);
- while(P4.length<w){const a=Math.random()*6.28,r=Math.sqrt(Math.random())*.9,d=Math.random()*6.28,e=Math.random()*3.14;P4.push({x:r*Math.cos(a),z:r*Math.sin(a),y:Math.random(),vx:Math.cos(d),vz:Math.sin(d),vy:Math.cos(e)});}
- P4.length=w;$('q4_v').textContent=f(s.Q/1000,2)+' kJ';$('n4_v').textContent=s.n+' mol';
- $('r4').innerHTML=`<span>Initial / final T</span><b>${f(s.T1,0)} → ${f(s.T2,0)} K</b><span>Initial / final V</span><b>${f(s.V1,1)} → ${f(s.V2,1)} L</b><span>Pressure (constant)</span><b>${s.Pk} kPa</b><span>Heat in, Q</span><b>${f(s.Q/1000,2)} kJ</b><span>Work by gas, W = PΔV</span><b>${f(s.W/1000,2)} kJ</b><span>Internal energy, ΔU</span><b>${f(s.U/1000,2)} kJ</b><span>Check: ΔU + W</span><b>${f((s.U+s.W)/1000,2)} kJ</b><span>Share to work</span><b>${s.Q?f(s.W/s.Q*100,0):'0'} %</b>`;}
-function pj(x,y,z){const X=x*Math.cos(rY)+z*Math.sin(rY),Z=-x*Math.sin(rY)+z*Math.cos(rY),Y=y-1.2,Y2=Y*Math.cos(rX)-Z*Math.sin(rX),Z2=Y*Math.sin(rX)+Z*Math.cos(rX),k=6/(6+Z2);
- return [c4.width/2+X*k*105,c4.height*.52-Y2*k*105,k,Z2];}
-const hue=T=>Math.max(0,Math.min(230,230-(T-300)/500*230));
-function flame(x,y,r,a){const g=g4.createRadialGradient(x,y,0,x,y,r);g.addColorStop(0,`rgba(255,200,60,${.9*a})`);g.addColorStop(.5,`rgba(240,90,20,${.5*a})`);g.addColorStop(1,'rgba(240,90,20,0)');g4.fillStyle=g;g4.beginPath();g4.arc(x,y,r,0,7);g4.fill();}
-function arrow(x,y1,y2,col,t){g4.strokeStyle=g4.fillStyle=col;g4.lineWidth=4;g4.beginPath();g4.moveTo(x,y1);g4.lineTo(x,y2);g4.stroke();g4.beginPath();g4.moveTo(x-9,y2+(y1>y2?10:-10));g4.lineTo(x,y2);g4.lineTo(x+9,y2+(y1>y2?10:-10));g4.fill();g4.font='bold 13px system-ui';g4.fillText(t,x+12,y2+14);}
-function loop4(){const s=S4,Wd=c4.width,Ht=c4.height,sp=Math.sqrt(s.T2/300)*.025,a=Math.min(1,s.Q/6000+.05);
- for(const p of P4){p.x+=p.vx*sp;p.z+=p.vz*sp;p.y+=p.vy*sp/s.H;if(p.y<0){p.y=0;p.vy=Math.abs(p.vy)}if(p.y>1){p.y=1;p.vy=-Math.abs(p.vy)}
-  const r=Math.hypot(p.x,p.z);if(r>.95){const nx=p.x/r,nz=p.z/r,d=p.vx*nx+p.vz*nz;if(d>0){p.vx-=2*d*nx;p.vz-=2*d*nz}p.x=nx*.95;p.z=nz*.95}}
- g4.clearRect(0,0,Wd,Ht);const ink=css('--ink'),mut=css('--mut'),col=`hsl(${hue(s.T2)},85%,55%)`;
- if(view=='3d'){if($('auto').checked&&!drag)rY+=.006;
-  const b=pj(0,-.25,0);flame(b[0],b[1],90*b[2]*(.4+a),a);
-  const ring=y=>{g4.beginPath();for(let i=0;i<=40;i++){const t=i/40*6.283,p=pj(Math.cos(t),y,Math.sin(t));i?g4.lineTo(p[0],p[1]):g4.moveTo(p[0],p[1]);}};
-  g4.lineWidth=2;g4.strokeStyle=mut;ring(0);g4.fillStyle='rgba(120,130,140,.18)';g4.fill();g4.stroke();
-  for(let i=0;i<14;i++){const t=i/14*6.283,p=pj(Math.cos(t),0,Math.sin(t)),q=pj(Math.cos(t),s.H,Math.sin(t));g4.strokeStyle='rgba(120,140,160,.45)';g4.beginPath();g4.moveTo(p[0],p[1]);g4.lineTo(q[0],q[1]);g4.stroke();}
-  const pts=P4.map(p=>({p:pj(p.x*1,p.y*s.H,p.z)})).sort((u,v)=>v.p[3]-u.p[3]);
-  for(const o of pts){g4.fillStyle=col;g4.globalAlpha=.55+.45*o.p[2]/1.3;g4.beginPath();g4.arc(o.p[0],o.p[1],5.5*o.p[2],0,7);g4.fill();}g4.globalAlpha=1;
-  g4.strokeStyle=css('--acc');ring(s.H);g4.fillStyle='rgba(194,65,12,.3)';g4.fill();g4.stroke();
-  const tp=pj(0,s.H+.1,0);g4.fillStyle=ink;g4.font='bold 13px system-ui';g4.fillText('Piston (constant pressure)',tp[0]-80,tp[1]-14);
-  const bp=pj(0,-.4,0);g4.fillStyle=css('--red');g4.fillText('Burner: Q',bp[0]-30,bp[1]+18);
- } else {const cx=Wd*.33,base=Ht-80,sc=105,h=s.H*sc;flame(cx,base+40,80*(.4+a),a);
-  g4.fillStyle=css('--card');g4.fillRect(cx-110,base-h,220,h);
-  for(const p of P4){g4.fillStyle=col;g4.beginPath();g4.arc(cx+p.x*110,base-p.y*h,5,0,7);g4.fill();}
-  g4.strokeStyle=mut;g4.lineWidth=4;g4.beginPath();g4.moveTo(cx-110,base-h-20);g4.lineTo(cx-110,base);g4.lineTo(cx+110,base);g4.lineTo(cx+110,base-h-20);g4.stroke();
-  g4.fillStyle=css('--acc');g4.fillRect(cx-108,base-h-12,216,12);g4.fillStyle=mut;g4.fillRect(cx-30,base-h-34,60,22);g4.fillStyle=ink;g4.font='12px system-ui';g4.fillText('weight → P constant',cx-52,base-h-40);
-  arrow(cx-150,base+60,base+60-Math.max(8,s.Q/10000*90),css('--red'),'Q in');arrow(cx+150,base-h-6,base-h-6-Math.max(8,s.W/4000*60),css('--blue'),'W out');
-  const bx=Wd*.62,bw=Wd*.32,f1=s.Q?s.U/s.Q:.6;g4.fillStyle=ink;g4.font='bold 14px system-ui';g4.fillText('Where does the heat go?',bx,70);
-  g4.fillStyle=css('--red');g4.fillRect(bx,90,bw,28);g4.fillStyle='#fff';g4.fillText('Q = '+f(s.Q/1000,2)+' kJ',bx+8,109);
-  g4.fillStyle=css('--grn');g4.fillRect(bx,130,bw*f1,28);g4.fillStyle=css('--blue');g4.fillRect(bx+bw*f1,130,bw*(1-f1),28);
-  g4.fillStyle='#fff';g4.fillText('ΔU '+f(s.U/1000,2),bx+8,149);g4.fillText('W '+f(s.W/1000,2),bx+bw*f1+8,149);
-  g4.fillStyle=mut;g4.font='13px system-ui';g4.fillText('Q = ΔU + W',bx,190);g4.fillText('T: '+f(s.T1,0)+' → '+f(s.T2,0)+' K',bx,212);g4.fillText('V: '+f(s.V1,1)+' → '+f(s.V2,1)+' L',bx,232);}
- requestAnimationFrame(loop4);}
-['q4','n4'].forEach(i=>$(i).oninput=upd4);
-$('v3').onclick=()=>{view='3d';$('v3').classList.add('on');$('v2').classList.remove('on')};
-$('v2').onclick=()=>{view='2d';$('v2').classList.add('on');$('v3').classList.remove('on')};
-c4.onpointerdown=e=>{drag={x:e.clientX,y:e.clientY};c4.setPointerCapture(e.pointerId)};
-c4.onpointermove=e=>{if(!drag||view!='3d')return;rY+=(e.clientX-drag.x)*.01;rX=Math.max(-.2,Math.min(1.2,rX+(e.clientY-drag.y)*.01));drag={x:e.clientX,y:e.clientY}};
-c4.onpointerup=()=>drag=null;
-draw1();upd2();setProc();loop();upd4();loop4();
+const R=8.314,$=id=>document.getElementById(id),css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const f=(v,d=1)=>v.toLocaleString("en",{maximumFractionDigits:d,minimumFractionDigits:d}),cl=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const EXP=[
+{ico:"🧊",name:"Heating curve",sub:"ice → water → steam",eq:"Q = mcΔT · Q = mL",sp:5,gr:[-20,120,"°C"],tl:"Temperature (°C) vs time",
+ sl:[["m","Mass",50,300,10,100," g"],["P","Heater power",200,5000,100,2000," W"]],
+ ex:"<h3>Sensible vs latent heat</h3>Sloped parts of the graph warm a phase; flat parts change phase at constant temperature.<code>Q = m·c·ΔT (sensible)</code><code>Q = m·L (latent)</code><code>L_f = 334 J/g · L_v = 2260 J/g</code>Boiling alone takes about 7× the energy of melting."},
+{ico:"🔥",name:"Piston & First Law",sub:"Q = ΔU + W",eq:"ΔU = Q − W",sp:1,gr:[300,800,"K"],tl:"Temperature (K) vs time",
+ sl:[["n","Gas amount",.5,2,.5,1," mol"],["P","Heater power",200,3000,100,1000," W"]],
+ ex:"<h3>First Law at work</h3>Heat in either raises internal energy or pushes the piston up (work out).<code>ΔU = Q − W</code><code>Q = n·Cp·ΔT (P const)</code><code>W = PΔV · ΔU = n·Cv·ΔT</code>Monatomic gas: 60 % of heat becomes ΔU, 40 % becomes work. Lock the piston and W = 0."},
+{ico:"🎈",name:"Gas laws",sub:"PV = nRT",eq:"PV = nRT",sp:1,gr:[0,1000,"kPa"],tl:"Pressure (kPa) vs time",
+ sl:[["T","Temperature",100,800,10,300," K"],["V","Volume",5,40,1,20," L"],["n","Gas amount",.5,3,.5,1.5," mol"]],
+ ex:"<h3>Kinetic theory</h3>Pressure comes from molecules hitting the walls; temperature is their average kinetic energy.<code>PV = nRT (R = 8.314)</code><code>KE = (3/2)k_B·T</code><code>v_rms = √(3RT/M)</code>Boyle: P ∝ 1/V · Charles: V ∝ T · Gay-Lussac: P ∝ T."}];
+const NAMES=["Ice warming","Melting (latent)","Water warming","Boiling (latent)","Steam warming"],T0=[-20,0,0,100,100],T1=[0,0,100,100,120],GH=3.3,N=120,hOf=V=>.3+V*.04;
+let cur=0,vals={},S={},hist=[],paused=false,spin=true,v3=true,ir=false,speed=5,rotY=.6,rotX=.18,camZ=9,drag=null;
+const segA=m=>[m*2.09*20,m*334,m*4.186*100,m*2260,m*2.01*20];
+const tk=()=>cur==0?S.T+273.15:S.T,hue=T=>cl(230-(T-300)/500*230,0,230);
+function reset(){S={t:0,Q:0,T:0,V:0,W:0,U:0,p:0,fm:0,fv:0,hW:0,hI:1.1,stage:0,sens:0,lat:0,tot:1};hist=[];
+ if(cur==0)S.T=-20;if(cur==1){S.T=300;S.V0=S.V=vals.n*R*3}if(cur==2){S.T=vals.T;S.V=vals.V}}
+function setExp(i){cur=i;vals={};const e=EXP[i];e.sl.forEach(s=>vals[s[0]]=s[5]);
+ $("cards").innerHTML=EXP.map((x,k)=>`<button class="exp ${k==i?"on":""}" data-k="${k}"><span class="i">${x.ico}</span><span><b>${x.name}</b><small>${x.sub}</small></span></button>`).join("");
+ document.querySelectorAll(".exp").forEach(b=>b.onclick=()=>setExp(+b.dataset.k));
+ $("sl").innerHTML=e.sl.map(s=>`<div class="sl"><label><span>${s[1]}</span><b id="o_${s[0]}"></b></label><input type="range" id="s_${s[0]}" min="${s[2]}" max="${s[3]}" step="${s[4]}" value="${s[5]}"></div>`).join("");
+ e.sl.forEach(s=>{const el=$("s_"+s[0]),sync=()=>{vals[s[0]]=+el.value;$("o_"+s[0]).textContent=el.value+s[6];el.style.setProperty("--p",(el.value-s[2])/(s[3]-s[2])*100+"%")};
+  el.oninput=()=>{sync();if((i==0&&s[0]=="m")||(i==1&&s[0]=="n"))reset()};sync()});
+ $("optrow").style.display=i==1?"block":"none";$("opt").value="0";$("eq").textContent=e.eq;$("explain").innerHTML=e.ex;$("tll").textContent=e.tl;
+ $("gmax").textContent=e.gr[1];$("gmin").textContent=e.gr[0];setSpeed(e.sp);reset();vis()}
+function setSpeed(s){speed=s;document.querySelectorAll("#chips button").forEach(b=>b.classList.toggle("on",+b.dataset.s==s))}
+document.querySelectorAll("#chips button").forEach(b=>b.onclick=()=>setSpeed(+b.dataset.s));
+$("opt").onchange=reset;
+function step(dt){S.t+=dt;
+ if(cur==0){const s=segA(vals.m),tot=s.reduce((a,b)=>a+b);S.tot=tot;S.Q=Math.min(tot,S.Q+vals.P*dt);let r=S.Q,i=0;for(;i<4;i++){if(r<=s[i])break;r-=s[i]}
+  S.T=T0[i]+(T1[i]-T0[i])*cl(r/s[i]);S.stage=i;S.fm=cl((S.Q-s[0])/s[1]);S.fv=cl((S.Q-s[0]-s[1]-s[2])/s[3]);
+  S.lat=cl(S.Q-s[0],0,s[1])+cl(S.Q-s[0]-s[1]-s[2],0,s[3]);S.sens=S.Q-S.lat;S.hW=.95*S.fm*(1-S.fv);S.hI=1.1*(1-S.fm)}
+ if(cur==1){const n=vals.n,iso=$("opt").value=="1";if(S.T<800&&(iso||S.V<70)){const dQ=vals.P*dt;S.Q+=dQ;S.T+=dQ/(n*(iso?1.5:2.5)*R)}
+  S.V=iso?S.V0:n*R*S.T/100;S.U=n*1.5*R*(S.T-300);S.W=iso?0:100*(S.V-S.V0);S.p=n*R*S.T/S.V}
+ if(cur==2){const k=Math.min(1,dt*3);S.T+=(vals.T-S.T)*k;S.V+=(vals.V-S.V)*k;S.p=vals.n*R*S.T/S.V}
+ hist.push([S.t,cur==2?S.p:S.T]);if(hist.length>1500)hist=hist.filter((_,i)=>i%2==0)}
+/* ---- three.js ---- */
+const rd=new THREE.WebGLRenderer({canvas:$("cv3d"),antialias:true,alpha:true}),sc=new THREE.Scene(),cam=new THREE.PerspectiveCamera(40,1,.1,100),grp=new THREE.Group();sc.add(grp);
+sc.add(new THREE.AmbientLight(0xffffff,.75));const dl=new THREE.DirectionalLight(0xffffff,.8);dl.position.set(3,5,4);sc.add(dl);
+const M=(g,c,o)=>new THREE.Mesh(g,new THREE.MeshPhongMaterial(Object.assign({color:c},o||{}))),CY=(a,b,h)=>new THREE.CylinderGeometry(a,b,h,40);
+const glass=M(new THREE.CylinderGeometry(1.02,1.02,GH,40,1,true),0x9fd8ff,{transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false});glass.position.y=GH/2;
+const heater=M(CY(1.15,1.15,.16),0x555555),ice=M(new THREE.BoxGeometry(1.4,1,1.4),0xcff3ff,{transparent:true,opacity:.85}),water=M(CY(.99,.99,1),0x2b8cff,{transparent:true,opacity:.55}),piston=M(CY(1,1,.12),0xf2542d),rod=M(CY(.06,.06,1),0x888888);
+heater.position.y=-.1;grp.add(glass,heater,ice,water,piston,rod);
+const Pa=[];for(let i=0;i<N;i++)Pa.push({x:0,z:0,y:0,yf:Math.random(),vx:Math.random()*2-1,vz:Math.random()*2-1,vy:Math.random()*2-1});
+Pa.forEach(p=>{const r=Math.sqrt(Math.random())*.9,a=Math.random()*6.28;p.x=r*Math.cos(a);p.z=r*Math.sin(a)});
+const pos=new Float32Array(N*3),pg=new THREE.BufferGeometry();pg.setAttribute("position",new THREE.BufferAttribute(pos,3));
+const pts=new THREE.Points(pg,new THREE.PointsMaterial({size:.13,color:0xffffff}));grp.add(pts);
+function vis(){ice.visible=water.visible=cur==0;piston.visible=rod.visible=cur>0}
+function updPts(dt){let lo=.02,hi=1,n=0,sp=1;
+ if(cur==0){lo=Math.max(S.hW,S.hW*.8+S.hI)+.05;hi=GH-.05;n=Math.round(N*S.fv);sp=.9*Math.sqrt((S.T+273)/373)}
+ else{hi=hOf(S.V);n=Math.min(N,Math.round(vals.n*40));sp=.9*Math.sqrt(Math.max(S.T,50)/300)}
+ for(let i=0;i<N;i++){const p=Pa[i];p.x+=p.vx*sp*dt*.6;p.z+=p.vz*sp*dt*.6;p.yf+=p.vy*sp*dt/Math.max(.3,hi-lo);
+  if(p.yf<0){p.yf=0;p.vy=Math.abs(p.vy)}if(p.yf>1){p.yf=1;p.vy=-Math.abs(p.vy)}
+  const r=Math.hypot(p.x,p.z);if(r>.92){const nx=p.x/r,nz=p.z/r,d=p.vx*nx+p.vz*nz;if(d>0){p.vx-=2*d*nx;p.vz-=2*d*nz}p.x=nx*.92;p.z=nz*.92}
+  p.y=lo+p.yf*(hi-lo);pos[3*i]=p.x;pos[3*i+1]=p.y;pos[3*i+2]=p.z}
+ pg.attributes.position.needsUpdate=true;pg.setDrawRange(0,n);return n}
+function rs(){const st=$("stage"),w=st.clientWidth,h=st.clientHeight,d=devicePixelRatio||1;rd.setPixelRatio(d);rd.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();camZ=w/h<1?14:9;$("cv2d").width=w*d;$("cv2d").height=h*d}
+addEventListener("resize",rs);
+$("stage").onpointerdown=e=>{if(e.target.closest("#hud,#tl"))return;drag={x:e.clientX,y:e.clientY}};
+addEventListener("pointermove",e=>{if(!drag||!v3)return;rotY+=(e.clientX-drag.x)*.01;rotX=cl(rotX+(e.clientY-drag.y)*.005,-.2,.8);drag={x:e.clientX,y:e.clientY}});
+addEventListener("pointerup",()=>drag=null);
+$("stage").onwheel=e=>{e.preventDefault();camZ=cl(camZ+e.deltaY*.01,5,16)};
+/* ---- 2D ---- */
+function d2(n,col){const c=$("cv2d"),g=c.getContext("2d"),W=c.width,H=c.height,d=devicePixelRatio||1,s=Math.min((H-190*d)/GH,W*.2),cx=W*.46,base=H-170*d,X=x=>cx+x*s,Y=y=>base-y*s,mut=css("--ink2");
+ g.clearRect(0,0,W,H);const lv=cur<2?Math.min(1,vals.P/(cur?3000:5000)):0;
+ g.fillStyle=`rgba(255,${130-lv*90|0},30,${.3+.7*lv})`;g.fillRect(X(-1.15),Y(0),2.3*s,14*d);
+ if(cur==0){g.fillStyle="rgba(43,140,255,.55)";g.fillRect(X(-1),Y(S.hW),2*s,S.hW*s);g.fillStyle="rgba(207,243,255,.9)";g.fillRect(X(-.7),Y(S.hW*.8+S.hI),1.4*s,S.hI*s)}
+ else{const h=hOf(S.V);g.fillStyle=mut;g.fillRect(cx-5*d,Y(GH+.5),10*d,Y(h)-Y(GH+.5));g.fillStyle=css("--ember");g.fillRect(X(-1),Y(h)-6*d,2*s,12*d)}
+ g.strokeStyle=mut;g.lineWidth=3*d;g.beginPath();g.moveTo(X(-1),Y(GH));g.lineTo(X(-1),Y(0));g.lineTo(X(1),Y(0));g.lineTo(X(1),Y(GH));g.stroke();
+ g.fillStyle=col;for(let i=0;i<n;i++){g.beginPath();g.arc(X(Pa[i].x),Y(Pa[i].y),4.5*d,0,7);g.fill()}
+ const ar=(x,y1,y2,c,t)=>{g.strokeStyle=g.fillStyle=c;g.lineWidth=4*d;g.beginPath();g.moveTo(x,y1);g.lineTo(x,y2);g.stroke();g.beginPath();g.moveTo(x-9*d,y2+10*d);g.lineTo(x,y2);g.lineTo(x+9*d,y2+10*d);g.fill();g.font=`bold ${13*d}px system-ui`;g.fillText(t,x+12*d,y2+14*d)};
+ if(cur==0&&lv>0)ar(X(-1.8),Y(-.1),Y(-.1)-lv*90*d-12*d,"#ff6a3d","Q in");
+ if(cur==1){ar(X(-1.8),Y(-.1),Y(-.1)-Math.min(1,S.Q/9000)*90*d-12*d,"#ff6a3d","Q "+f(S.Q/1000,1)+" kJ");if(S.W>0)ar(X(1.8),Y(hOf(S.V)),Y(hOf(S.V))-Math.min(1,S.W/4000)*90*d-12*d,"#5aa9ff","W "+f(S.W/1000,1)+" kJ")}}
+/* ---- readouts ---- */
+function hud(){const r=(a,b)=>`<div><span>${a}</span><b>${b}</b></div>`;let h="";
+ if(cur==0)h=r("Stage",NAMES[S.stage])+r("Temperature",f(S.T,1)+" °C")+r("Heat added",f(S.Q/1000,1)+" kJ")+r("Sensible",f(S.sens/1000,1)+" kJ")+r("Latent",f(S.lat/1000,1)+" kJ")+r("Total needed",f(S.tot/1000,0)+" kJ");
+ if(cur==1)h=r("Temperature",f(S.T,0)+" K")+r("Volume",f(S.V,1)+" L")+r("Pressure",f(S.p,0)+" kPa")+r("Q in",f(S.Q/1000,2)+" kJ")+r("Work W",f(S.W/1000,2)+" kJ")+r("ΔU",f(S.U/1000,2)+" kJ")+r("ΔU + W",f((S.U+S.W)/1000,2)+" kJ");
+ if(cur==2)h=r("Pressure",f(S.p,0)+" kPa")+r("Temperature",f(S.T,0)+" K")+r("Volume",f(S.V,1)+" L")+r("v_rms (He)",f(Math.sqrt(3*R*S.T/.004),0)+" m/s")+r("KE per atom",f(1.5*1.381e-23*S.T*1e21,2)+"e-21 J");
+ $("hud").innerHTML="<h4>Live readout</h4>"+h;$("clock").textContent=f(S.t,1)+" s";
+ const e=EXP[cur],y=cur==2?S.p:S.T,mn=e.gr[0],mx=cur==2?Math.max(400,S.p*1.1):e.gr[1];$("mer").style.height=cl((y-mn)/(mx-mn))*100+"%";$("gval").textContent=f(y,0)+e.gr[2];$("gmax").textContent=f(mx,0)}
+function tl(){const c=$("tlc"),g=c.getContext("2d"),W=c.width,H=c.height;g.clearRect(0,0,W,H);if(hist.length<2)return;
+ const tm=Math.max(10,S.t),ys=hist.map(h=>h[1]),a=Math.min(...ys),b=Math.max(...ys,a+1);
+ const gr=g.createLinearGradient(0,0,W,0);["#2b2f8f","#d1306f","#ff6a3d","#ffb23e"].forEach((c,i)=>gr.addColorStop(i/3,c));
+ g.strokeStyle=gr;g.lineWidth=3;g.beginPath();hist.forEach((h,i)=>{const x=h[0]/tm*(W-8)+4,y=H-6-(h[1]-a)/(b-a)*(H-14);i?g.lineTo(x,y):g.moveTo(x,y)});g.stroke()}
+/* ---- loop ---- */
+let last=performance.now();
+function loop(now){const dt=Math.min(.05,(now-last)/1000);last=now;
+ if(!paused)step(dt*speed);const Tk=Math.max(tk(),100),n=updPts(dt),col=cur==0?"#e6eef5":`hsl(${hue(Tk)},85%,55%)`;
+ if(spin&&!drag)rotY+=dt*.3;grp.rotation.y=rotY;grp.rotation.x=rotX;cam.position.set(0,2.4,camZ);cam.lookAt(0,1.5,0);
+ if(cur==0){ice.scale.y=Math.max(.001,S.hI);ice.position.y=S.hW*.8+S.hI/2;water.scale.y=Math.max(.001,S.hW);water.position.y=S.hW/2;pts.material.color.set(col)}
+ else{const h=hOf(S.V);piston.position.y=h;rod.scale.y=GH+.5-h;rod.position.y=(h+GH+.5)/2;pts.material.color.set(col)}
+ const lv=cur<2?Math.min(1,vals.P/(cur?3000:5000)):0;heater.material.emissive.setHSL(.04,1,.3*lv);
+ glass.material.color.set(ir?`hsl(${hue(Tk)},90%,55%)`:"#9fd8ff");glass.material.opacity=ir?.3:.16;
+ if(v3)rd.render(sc,cam);else d2(n,col);hud();tl();requestAnimationFrame(loop)}
+$("b3").onclick=()=>{v3=true;$("cv3d").style.display="";$("cv2d").style.display="none";$("b3").classList.add("on");$("b2").classList.remove("on");$("vh").textContent="Drag to turn the bench. Scroll or pinch to zoom."};
+$("b2").onclick=()=>{v3=false;$("cv3d").style.display="none";$("cv2d").style.display="";$("b2").classList.add("on");$("b3").classList.remove("on");$("vh").textContent="Side cross-section with energy arrows."};
+$("bSpin").onclick=e=>{spin=!spin;e.target.classList.toggle("on",spin)};
+$("bPause").onclick=e=>{paused=!paused;e.target.classList.toggle("on",paused);e.target.textContent=paused?"Resume":"Pause"};
+$("bReset").onclick=reset;$("bIR").onclick=e=>{ir=!ir;e.target.classList.toggle("on",ir)};
+rs();setExp(0);requestAnimationFrame(loop);
 </script></body></html>
