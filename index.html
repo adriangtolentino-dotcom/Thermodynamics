@@ -100,8 +100,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:24px;border-radius:4px;bac
 <div id="cr" hidden><div class="crin"><button id="crX">✕ Close</button>
 <div class="crh"><span class="logo">🔥</span><div><h2>Credits Dashboard</h2><p>Thermo Lab 3D · Interactive Educational Model on Heat Transfer</p></div></div>
 <div class="crg">
-<div class="cc"><h4>Submitted to</h4><div class="big ed" contenteditable="true" data-k="to">Teacher / Professor Name</div><div class="sm ed" contenteditable="true" data-k="subj">Subject: Physics</div></div>
-<div class="cc"><h4>Submitted by</h4><div class="big ed" contenteditable="true" data-k="grp">Group Name</div><div class="sm ed" contenteditable="true" data-k="sec">Grade / Section</div><div class="sm ed" contenteditable="true" data-k="date">Date: November 25, 2026</div></div>
+<div class="cc"><h4>Submitted to</h4><div class="big ed" contenteditable="true" data-k="to">Gerome Allado Layaoen</div><div class="sm ed" contenteditable="true" data-k="subj">Subject: Physics</div></div>
 </div>
 <h3>Group members</h3><div class="crm" id="crm"></div>
 <h3>About this project</h3>
@@ -213,7 +212,7 @@ $("bPause").onclick=e=>{paused=!paused;e.target.classList.toggle("on",paused);e.
 $("bReset").onclick=reset;$("bIR").onclick=e=>{ir=!ir;e.target.classList.toggle("on",ir)};
 /* ---- credits dashboard ---- */
 const ROLES=["Group Leader","Simulation Developer","Researcher (Formulas)","Designer (Interface)","Documentation"];
-$("crm").innerHTML=ROLES.map((r,i)=>`<div class="mem"><span class="av" id="av${i}">M${i+1}</span><div><div class="nm ed" contenteditable="true" data-k="m${i}">Member Name ${i+1}</div><div class="rl ed" contenteditable="true" data-k="r${i}">${r}</div></div></div>`).join("");
+$("crm").innerHTML=ROLES.map((r,i)=>`<div class="mem"><span class="av" id="av${i}">M${i+1}</span><div><div class="nm ed" contenteditable="true" data-k="m${i}">Adrian Tolentino ${i+1}</div><div class="rl ed" contenteditable="true" data-k="r${i}">${r}</div></div></div>`).join("");
 const ini=t=>t.trim().split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()||"?";
 document.querySelectorAll(".ed").forEach(el=>{const k=el.dataset.k;
  try{const v=localStorage.getItem("cr_"+k);if(v)el.textContent=v}catch(e){}
