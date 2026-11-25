@@ -57,6 +57,22 @@ input[type=range]::-moz-range-thumb{width:12px;height:24px;border-radius:4px;bac
 #tl b{font:700 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:#7d8b9b}
 #tlc{width:100%;height:96px;display:block}
 @media(max-width:860px){html,body{height:auto}#app{grid-template-columns:1fr;height:auto}#stage{height:78vh;order:-1}aside{padding-left:40px}#hud{min-width:0;font-size:11px;padding:6px 9px}}
+#cr{position:fixed;inset:0;z-index:100;overflow:auto;background:radial-gradient(900px 500px at 100% 0%,color-mix(in srgb,var(--ember) 12%,transparent),transparent 60%),radial-gradient(800px 500px at 0% 100%,color-mix(in srgb,var(--ice) 12%,transparent),transparent 60%),var(--paper);padding:max(20px,env(safe-area-inset-top,0px)) 20px 40px}
+#cr[hidden]{display:none}
+.crin{max-width:960px;margin:0 auto}
+#crX{float:right;padding:9px 16px;border-radius:6px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:700 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;cursor:pointer}
+.crh{display:flex;gap:14px;align-items:center;margin:8px 0 22px}.crh h2{font:700 2rem var(--disp);text-transform:uppercase;margin:0;line-height:1}.crh p{margin:4px 0 0;color:var(--ink2)}
+.crin h3{font:700 11px var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);margin:26px 0 10px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.crg,.crm{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.cc,.mem{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--ember);border-radius:10px;padding:14px 16px;box-shadow:0 10px 24px -18px rgba(40,25,10,.5)}
+.cc:nth-child(2){border-top-color:var(--ice)}
+.cc h4{margin:0 0 8px;font:700 11px var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+.big{font:700 1.5rem var(--disp);text-transform:uppercase}.sm{color:var(--ink2);margin-top:4px}
+.ed{outline:none;border-radius:4px;border-bottom:1px dashed color-mix(in srgb,var(--ember) 55%,transparent);cursor:text}.ed:focus{background:color-mix(in srgb,var(--ember) 10%,transparent)}
+.mem{display:flex;gap:14px;align-items:center}
+.av{width:52px;height:52px;flex:none;border-radius:50%;display:grid;place-items:center;font:700 18px var(--disp);color:#fff;background:var(--ramp)}
+.nm{font:700 1.15rem var(--disp);text-transform:uppercase}.rl{font:.8rem var(--mono);color:var(--ink2);margin-top:3px}
+.crin ul{margin:0;padding-left:20px;color:var(--ink2)}.crin li{margin:3px 0}
 </style></head><body>
 <div id="app">
 <aside>
@@ -72,7 +88,7 @@ input[type=range]::-moz-range-thumb{width:12px;height:24px;border-radius:4px;bac
 <div class="sec">Look around</div>
 <div class="tog"><button id="b3" class="on">3D view</button><button id="b2">2D view</button></div>
 <div class="tog"><button id="bSpin" class="on">Spin</button><button id="bPause">Pause</button><button id="bReset">Start over</button></div>
-<div class="tog"><button id="bIR">Heat vision</button></div>
+<div class="tog"><button id="bIR">Heat vision</button><button id="bCr">Credits</button></div>
 <p class="hint" id="vh">Drag to turn the bench. Scroll or pinch to zoom.</p>
 </aside>
 <div id="stage">
@@ -80,6 +96,18 @@ input[type=range]::-moz-range-thumb{width:12px;height:24px;border-radius:4px;bac
 <div id="gauge"><span id="gmax"></span><div class="gt"><div id="mer"></div></div><span id="gmin"></span><span id="gval" style="color:var(--ember)"></span></div>
 <div id="hud"></div>
 <div id="tl"><b id="tll">Your experiment so far</b><canvas id="tlc" width="760" height="96"></canvas></div>
+</div></div>
+<div id="cr" hidden><div class="crin"><button id="crX">✕ Close</button>
+<div class="crh"><span class="logo">🔥</span><div><h2>Credits Dashboard</h2><p>Thermo Lab 3D · Interactive Educational Model on Heat Transfer</p></div></div>
+<div class="crg">
+<div class="cc"><h4>Submitted to</h4><div class="big ed" contenteditable="true" data-k="to">Teacher / Professor Name</div><div class="sm ed" contenteditable="true" data-k="subj">Subject: Physics</div></div>
+<div class="cc"><h4>Submitted by</h4><div class="big ed" contenteditable="true" data-k="grp">Group Name</div><div class="sm ed" contenteditable="true" data-k="sec">Grade / Section</div><div class="sm ed" contenteditable="true" data-k="date">Date: November 25, 2026</div></div>
+</div>
+<h3>Group members</h3><div class="crm" id="crm"></div>
+<h3>About this project</h3>
+<div class="cc" style="border-top-color:var(--amber)"><p style="margin:0 0 8px">A digital interactive model that simulates heat transfer in a thermodynamic system, so learners can see and measure sensible heat, latent heat and gas behaviour while applying the First Law of Thermodynamics and the Kinetic Theory of Gases with the Gas Laws.</p>
+<ul><li>Experiment 1: Heating curve (Q = mcΔT, Q = mL)</li><li>Experiment 2: Piston and First Law (ΔU = Q − W)</li><li>Experiment 3: Gas laws (PV = nRT)</li><li>Built with HTML, JavaScript and Three.js (3D and 2D views)</li></ul></div>
+<p class="hint">Click any dashed text to edit it. Your entries are saved in this browser only.</p>
 </div></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -183,5 +211,15 @@ $("b2").onclick=()=>{v3=false;$("cv3d").style.display="none";$("cv2d").style.dis
 $("bSpin").onclick=e=>{spin=!spin;e.target.classList.toggle("on",spin)};
 $("bPause").onclick=e=>{paused=!paused;e.target.classList.toggle("on",paused);e.target.textContent=paused?"Resume":"Pause"};
 $("bReset").onclick=reset;$("bIR").onclick=e=>{ir=!ir;e.target.classList.toggle("on",ir)};
+/* ---- credits dashboard ---- */
+const ROLES=["Group Leader","Simulation Developer","Researcher (Formulas)","Designer (Interface)","Documentation"];
+$("crm").innerHTML=ROLES.map((r,i)=>`<div class="mem"><span class="av" id="av${i}">M${i+1}</span><div><div class="nm ed" contenteditable="true" data-k="m${i}">Member Name ${i+1}</div><div class="rl ed" contenteditable="true" data-k="r${i}">${r}</div></div></div>`).join("");
+const ini=t=>t.trim().split(/\s+/).slice(0,2).map(w=>w[0]||"").join("").toUpperCase()||"?";
+document.querySelectorAll(".ed").forEach(el=>{const k=el.dataset.k;
+ try{const v=localStorage.getItem("cr_"+k);if(v)el.textContent=v}catch(e){}
+ const av=k[0]=="m"&&$("av"+k.slice(1));if(av)av.textContent=ini(el.textContent);
+ el.oninput=()=>{try{localStorage.setItem("cr_"+k,el.textContent)}catch(e){}if(av)av.textContent=ini(el.textContent)};
+ el.onkeydown=e=>{if(e.key=="Enter"){e.preventDefault();el.blur()}}});
+$("bCr").onclick=()=>{$("cr").hidden=false};$("crX").onclick=()=>{$("cr").hidden=true};
 rs();setExp(0);requestAnimationFrame(loop);
 </script></body></html>
